@@ -16,7 +16,6 @@ import {
   Flame,
   MessageSquare,
   Sparkles,
-  ExternalLink,
   X,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -290,19 +289,6 @@ export default function ClientDashboardPage() {
                                     <h3 className="text-sm font-bold text-slate-100 truncate">
                                       {catalog?.name || 'Ejercicio sin nombre'}
                                     </h3>
-
-                                    {catalog?.mediaUrl && (
-                                      <a
-                                        href={catalog.mediaUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-400 hover:underline shrink-0"
-                                      >
-                                        <span>Ver técnica</span>
-                                        <ExternalLink className="h-3 w-3" />
-                                      </a>
-                                    )}
                                   </div>
 
                                   {catalog?.description && (

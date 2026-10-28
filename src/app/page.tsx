@@ -33,19 +33,45 @@ interface ExerciseItem {
 export default function Home() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
+  const [hasHydrated, setHasHydrated] = useState(false);
   const [exercises, setExercises] = useState<ExerciseItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Redirigir a los clientes directamente a su rutina personal
+  // 1. Validar la hidratación de la sesión en el cliente
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'CLIENT') {
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+
+    if (useAuthStore.persist.hasHydrated()) {
+      setHasHydrated(true);
+    }
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  // 2. Redirección automática:
+  // - Si no está autenticado -> directo al formulario de /login
+  // - Si es Alumno/Cliente -> directo a su rutina personal (/dashboard)
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    if (!isAuthenticated) {
+      router.replace('/login');
+      return;
+    }
+
+    if (user?.role === 'CLIENT') {
       router.replace('/dashboard');
     }
-  }, [isAuthenticated, user, router]);
+  }, [hasHydrated, isAuthenticated, user, router]);
 
-  // Consulta al endpoint real del backend: GET /api/exercises
+  // Consulta al endpoint real del backend: GET /api/exercises (solo si es ADMIN o TRAINER)
   const fetchExercises = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       setIsLoading(true);
       setErrorMsg(null);
@@ -57,11 +83,23 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    fetchExercises();
-  }, [fetchExercises]);
+    if (isAuthenticated && (user?.role === 'ADMIN' || user?.role === 'TRAINER')) {
+      fetchExercises();
+    }
+  }, [fetchExercises, isAuthenticated, user]);
+
+  // Pantalla de carga mientras se valida la sesión o se realiza la redirección a /login
+  if (!hasHydrated || !isAuthenticated || user?.role === 'CLIENT') {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-slate-100 gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-sky-400" />
+        <p className="text-xs font-medium text-slate-400">Accediendo a Strong Santiago...</p>
+      </div>
+    );
+  }
 
   return (
     <MainLayout>

@@ -83,6 +83,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     return pathname?.startsWith(href);
   };
 
+  // Ruta dinámica del logo según la sesión
+  const homeHref = !isAuthenticated ? '/login' : user?.role === 'CLIENT' ? '/dashboard' : '/';
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-sky-500/20 selection:text-sky-300">
       {/* =========================================================================
@@ -92,7 +95,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-40 md:flex md:w-64 md:flex-col md:border-r md:border-slate-800/80 md:bg-slate-900/90 md:backdrop-blur-xl">
         {/* Brand / Logo Section */}
         <Link
-          href="/"
+          href={homeHref}
           className="flex h-18 items-center gap-3.5 border-b border-slate-800/80 px-5 transition-opacity hover:opacity-90"
         >
           <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black border border-slate-800 p-1 shadow-md shadow-sky-950/40">
@@ -216,7 +219,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           MOBILE TOP APP BAR (Visible únicamente en móvil, hidden en md:)
       ========================================================================== */}
       <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-slate-800/70 bg-slate-950/90 px-4 backdrop-blur-md md:hidden">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href={homeHref} className="flex items-center gap-2.5">
           <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-black border border-slate-800 p-0.5 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="STRONG SANTIAGO" className="h-full w-full object-contain" />
