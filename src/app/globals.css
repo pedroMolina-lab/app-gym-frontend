@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Ocultar watermark y botón/indicador de desarrollo de Next.js */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dev-tools-button],
+[data-next-badge],
+#nextjs-dev-tools {
+  display: none !important;
+}
